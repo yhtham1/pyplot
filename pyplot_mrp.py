@@ -4,6 +4,7 @@
 import os
 import sys
 import re
+import datetime
 from pathlib import Path
 import matplotlib.pyplot as plt
 import japanize_matplotlib
@@ -66,6 +67,8 @@ def is_float(s):
 
 
 def extract_file(filename, colx, coly):
+
+	print('extract_file({} {} {})'.format(filename, colx, coly))
 	sn_mrp = ''
 	sn_mv2 = ''
 	date1 = ''
@@ -88,7 +91,7 @@ def extract_file(filename, colx, coly):
 			sn_mv2 = 'MV2:' + get_tail(l2, 'mv2serialnumber:')
 		if 0 < l1.find('*IDN?:'):
 			sn_mrp = 'MRP:' + get_serialnumber(get_tail(l1, '*IDN?:'))
-		k = re.split('\t,', l2)
+		k = re.split(r'[\t,]', l2)
 		if 0 <= l1.find('#'):
 			print(l2)
 			continue
@@ -123,6 +126,13 @@ TIMESTAMP	FREQ	プローブ温度	シグナル	ノイズ
 TIMESTAMP	VOLT	MV2_d	NMR_FREQ	MV2_FREQ	MV2_FREQ_RAW	MV2_TEMP	SIGNAL	NOISE
 
 """
+
+
+def get_filedatetime(path_p):
+	update_time = datetime.datetime.fromtimestamp(path_p.stat().st_mtime) # 更新時刻
+	ans = update_time.strftime('%Y-%m-%d %H:%M:%S')
+	# print('stat:{} '.format( ans))
+	return ans
 
 
 def usage():
@@ -163,12 +173,15 @@ def main():
 		print('file not found')
 		return
 
+	path_p = Path(sys.argv[0])
+	print('START {} {}'.format(path_p.name, get_filedatetime(path_p)))
 	# fig = plt.figure(figsize=(16,9))
 	fig = plt.figure()
 	ax1 = fig.add_subplot(1, 1, 1)
 	ax1.set_prop_cycle(monochrome)
 	ax1.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
 	ax1.set_ylim(-40, 10)
+
 
 	for filename in fn1:
 		if 0 < filename.find('MV2'):
