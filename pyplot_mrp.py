@@ -3,6 +3,7 @@
 
 import os
 import sys
+import re
 from pathlib import Path
 import matplotlib.pyplot as plt
 import japanize_matplotlib
@@ -87,7 +88,7 @@ def extract_file(filename, colx, coly):
 			sn_mv2 = 'MV2:' + get_tail(l2, 'mv2serialnumber:')
 		if 0 < l1.find('*IDN?:'):
 			sn_mrp = 'MRP:' + get_serialnumber(get_tail(l1, '*IDN?:'))
-		k = l2.split('\t')
+		k = re.split('\t,', l2)
 		if 0 <= l1.find('#'):
 			print(l2)
 			continue
@@ -129,7 +130,7 @@ def usage():
 	p = Path(cmd)
 	print('{} グラフを表示する。'.format(p.name))
 	print('Usage:')
-	print('\t{} [--x <ｘ軸のカラム(0..)>] [--y <y軸のカラム(0..)>]				'.format(p.name))
+	print('\t{} [--x <ｘ軸のカラム(0..)>] [--y <y軸のカラム(0..)>] テキストファイル'.format(p.name))
 
 
 def main():
