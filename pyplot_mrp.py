@@ -67,7 +67,6 @@ def is_float(s):
 
 
 def extract_file(filename, colx, coly):
-
 	print('extract_file({} {} {})'.format(filename, colx, coly))
 	sn_mrp = ''
 	sn_mv2 = ''
@@ -129,7 +128,7 @@ TIMESTAMP	VOLT	MV2_d	NMR_FREQ	MV2_FREQ	MV2_FREQ_RAW	MV2_TEMP	SIGNAL	NOISE
 
 
 def get_filedatetime(path_p):
-	update_time = datetime.datetime.fromtimestamp(path_p.stat().st_mtime) # 更新時刻
+	update_time = datetime.datetime.fromtimestamp(path_p.stat().st_mtime)  # 更新時刻
 	ans = update_time.strftime('%Y-%m-%d %H:%M:%S')
 	# print('stat:{} '.format( ans))
 	return ans
@@ -181,7 +180,6 @@ def main():
 	ax1.set_prop_cycle(monochrome)
 	ax1.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
 	ax1.set_ylim(-40, 10)
-
 
 	for filename in fn1:
 		if 0 < filename.find('MV2'):
