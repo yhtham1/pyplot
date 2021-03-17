@@ -67,7 +67,7 @@ def is_float(s):
 
 
 def extract_file(filename, colx, coly):
-	print('extract_file({} {} {})'.format(filename, colx, coly))
+	print('extract_file({} x={} y={})'.format(filename, colx, coly))
 	sn_mrp = ''
 	sn_mv2 = ''
 	date1 = ''
@@ -143,6 +143,8 @@ def usage():
 
 
 def main():
+	COLOR_MODE = False
+	TITLE = 'SIGNAL'
 	fn1 = []
 	col_x = 1
 	col_y = 3
@@ -150,17 +152,21 @@ def main():
 	while i in range(len(sys.argv)):  # fn2 in sys.argv[1:]:
 		fn2 = sys.argv[i]
 		fn = fn2.strip()
-		if 0 < fn.find('SN'):
+		if 0 == fn.find('color'):
+			COLOR_MODE = True
 			i += 1
 			continue
-		if 0 < fn.find('SIGNAL'):
+		if 0 == fn.find('SN'):
 			i += 1
 			continue
-		if 0 < fn.find('--x'):
+		if 0 == fn.find('SIGNAL'):
+			i += 1
+			continue
+		if 0 == fn.find('--x'):
 			col_x = int(sys.argv[i + 1])
 			i += 2
 			continue
-		if 0 < fn.find('--y'):
+		if 0 == fn.find('--y'):
 			col_y = int(sys.argv[i + 1])
 			i += 2
 			continue
@@ -173,19 +179,23 @@ def main():
 		return
 
 	path_p = Path(sys.argv[0])
-	print('START {} {}'.format(path_p.name, get_filedatetime(path_p)))
+	print('START {} {}'.format(path_p, get_filedatetime(path_p)))
 	# fig = plt.figure(figsize=(16,9))
 	fig = plt.figure()
 	ax1 = fig.add_subplot(1, 1, 1)
-	ax1.set_prop_cycle(monochrome)
+	if COLOR_MODE:
+		pass
+	else:
+		ax1.set_prop_cycle(monochrome)
 	ax1.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
 	ax1.set_ylim(-40, 10)
 
 	for filename in fn1:
 		if 0 < filename.find('MV2'):
-			x1, y1, lbl1 = extract_file(filename, 3, 7)
-		else:
-			x1, y1, lbl1 = extract_file(filename, col_x, col_y)
+			TITLE = 'MV2特性'
+			col_x = 3
+			col_y = 7
+		x1, y1, lbl1 = extract_file(filename, col_x, col_y)
 		ax1.set_xlabel('周波数(Hz)')
 		ax1.set_ylabel('signal(dB)')
 		# plt.plot(x1, y1, label=lbl1)
@@ -193,7 +203,7 @@ def main():
 
 	# ax1.xaxis.offsetText.set_fontsize(14)
 	ax1.xaxis.set_major_formatter(ptick.ScalarFormatter(useMathText=True))
-	plt.title('SIGNAL')
+	plt.title(TITLE)
 	ax1.legend()
 	plt.show()
 	# print_cycle()
