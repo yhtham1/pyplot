@@ -3,6 +3,7 @@
 
 import os
 import sys
+from pathlib import Path
 import matplotlib.pyplot as plt
 import japanize_matplotlib
 import matplotlib.ticker as ptick
@@ -12,7 +13,8 @@ from cycler import cycler
 def monochrome_style_generator():
 	linestyle = ['-', '--', '-.', ':']
 	markerstyle = ['h', '2', 'v', '^', 's', '<', '>', '1', '3', '4', '8', 'p', '*', 'H', '+', ',', '.', 'x', 'o', 'D',
-				   'd', '|', '_']
+				   'd',
+				   '|', '_']
 	line_idx = 0
 	marker_idx = 0
 	while True:
@@ -122,26 +124,43 @@ TIMESTAMP	VOLT	MV2_d	NMR_FREQ	MV2_FREQ	MV2_FREQ_RAW	MV2_TEMP	SIGNAL	NOISE
 """
 
 
+def usage():
+	cmd = sys.argv[0]
+	p = Path(cmd)
+	print('{} グラフを表示する。'.format(p.name))
+	print('Usage:')
+	print('\t{} [--x <ｘ軸のカラム(0..)>] [--y <y軸のカラム(0..)>]				'.format(p.name))
+
+
 def main():
-	argn = len(sys.argv)
-	# print(sys.argv)
 	fn1 = []
-	for fn2 in sys.argv[1:]:
+	col_x = 1
+	col_y = 3
+	i = 1
+	while i in range(len(sys.argv)):  # fn2 in sys.argv[1:]:
+		fn2 = sys.argv[i]
 		fn = fn2.strip()
 		if 0 < fn.find('SN'):
+			i += 1
 			continue
 		if 0 < fn.find('SIGNAL'):
+			i += 1
+			continue
+		if 0 < fn.find('--x'):
+			col_x = int(sys.argv[i + 1])
+			i += 2
+			continue
+		if 0 < fn.find('--y'):
+			col_y = int(sys.argv[i + 1])
+			i += 2
 			continue
 		fn1.append(fn)
+		i += 1
 
 	if 0 == len(fn1):
+		usage()
 		print('file not found')
 		return
-		fn1.append('20210305_1435_log_MV2.txt')
-		fn1.append('20210305_1357_log_MV2.txt')
-	# fn1.append('ノイズ特性_C21010037_20210120_1402.txt')
-	# fn1.append('ノイズ特性_C21030011_20210304_1703.txt')
-	# fn1.append('ノイズ特性_C21030011_20210305_1254.txt')
 
 	# fig = plt.figure(figsize=(16,9))
 	fig = plt.figure()
@@ -154,7 +173,7 @@ def main():
 		if 0 < filename.find('MV2'):
 			x1, y1, lbl1 = extract_file(filename, 3, 7)
 		else:
-			x1, y1, lbl1 = extract_file(filename, 1, 3)
+			x1, y1, lbl1 = extract_file(filename, col_x, col_y)
 		ax1.set_xlabel('周波数(Hz)')
 		ax1.set_ylabel('signal(dB)')
 		# plt.plot(x1, y1, label=lbl1)
