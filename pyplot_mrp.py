@@ -188,7 +188,7 @@ def main():
 	else:
 		ax1.set_prop_cycle(monochrome)
 	ax1.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
-	ax1.set_ylim(-40, 10)
+	ax1.set_ylim(-40, 20)
 
 	for filename in fn1:
 		if 0 < filename.find('MV2'):
