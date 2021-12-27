@@ -66,7 +66,7 @@ def is_float(s):
 	return True
 
 
-def extract_file(filename, colx, coly):
+def extract_file(filename, colx, coly, sn_mode = False):
 	print('extract_file({} x={} y={})'.format(filename, colx, coly))
 	sn_mrp = ''
 	sn_mv2 = ''
@@ -102,7 +102,10 @@ def extract_file(filename, colx, coly):
 			continue
 		# print(k[colx],k[coly])
 		ansx.append(float(k[colx]))
-		ansy.append(float(k[coly]))
+		if sn_mode:
+			ansy.append( float(k[coly])-float(k[coly+1]))
+		else:
+			ansy.append(float(k[coly]))
 		date1 = k[0].strip()
 	if '' != sn_mrp:
 		lbl = sn_mrp
@@ -144,6 +147,7 @@ def usage():
 
 def main():
 	COLOR_MODE = False
+	SN_MODE = False
 	TITLE = 'SIGNAL'
 	fn1 = []
 	col_x = 1
@@ -157,6 +161,7 @@ def main():
 			i += 1
 			continue
 		if 0 == fn.find('SN'):
+			SN_MODE = True
 			i += 1
 			continue
 		if 0 == fn.find('SIGNAL'):
@@ -188,16 +193,22 @@ def main():
 	else:
 		ax1.set_prop_cycle(monochrome)
 	ax1.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
-	ax1.set_ylim(-40, 20)
+	if SN_MODE:
+		ax1.set_ylim(10, 40)
+	else:
+		ax1.set_ylim(-40, 30)
 
 	for filename in fn1:
 		if 0 < filename.find('MV2'):
 			TITLE = 'MV2特性'
-			col_x = 3
-			col_y = 7
-		x1, y1, lbl1 = extract_file(filename, col_x, col_y)
+			col_x = 3 # NMR FREQ
+			col_y = 7 # SIGNAL
+		x1, y1, lbl1 = extract_file(filename, col_x, col_y, SN_MODE)
 		ax1.set_xlabel('周波数(Hz)')
-		ax1.set_ylabel('signal(dB)')
+		if SN_MODE:
+			ax1.set_ylabel('S/N(dB)')
+		else:
+			ax1.set_ylabel('signal(dB)')
 		# plt.plot(x1, y1, label=lbl1)
 		ax1.plot(x1, y1, label=lbl1)
 
