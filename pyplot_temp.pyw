@@ -65,8 +65,15 @@ def is_float(s):
 		return False
 	return True
 
+def is_datetime(ts:str):
+	dt = datetime.datetime.now()
+	fmt1 = '%Y/%m/%d %H:%M:%S'
+	dt1 = datetime.datetime.strptime(ts, fmt1)
+	return dt
 
-def extract_file(filename, colx, coly, sn_mode = False):
+
+
+def extract_one_file(filename, colx, coly, sn_mode = False):
 	# print('extract_file({} x={} y={})'.format(filename, colx, coly))
 	sn_mrp = ''
 	sn_mv2 = ''
@@ -82,37 +89,26 @@ def extract_file(filename, colx, coly, sn_mode = False):
 			txt1 = f.readlines()
 	for l1 in txt1:
 		l2 = l1.strip()
-		if 0 < l2.find('LOG START'):
-			ansx = []
-			ansy = []
-			date1 = ''
 		if 0 < l2.find('mv2serial'):
 			sn_mv2 = 'MV2:' + get_tail(l2, 'mv2serialnumber:')
-		if 0 < l1.find('*IDN?:'):
-			sn_mrp = 'MRP:' + get_serialnumber(get_tail(l1, '*IDN?:'))
-		k = re.split(r'[\t,]', l2)
-		if 0 <= l1.find('#'):
-			# print(l2)
-			continue
+		k = re.split(r'[,]', l2)
 		if len(k) < colx:
 			continue
 		if len(k) < coly:
 			continue
-		if False == is_float(k[colx]):
+		try:
+			fmt1 = '%Y/%m/%d %H:%M:%S'
+			dt1 = datetime.datetime.strptime(k[colx], fmt1)
+		except:
 			continue
-		# print(k[colx],k[coly])
-		ansx.append(float(k[colx]))
-		if sn_mode:
-			ansy.append( float(k[coly])-float(k[coly+1]))
-		else:
-			ansy.append(float(k[coly]))
+		# is_datetime(k[colx])
+		# if False == is_date(k[colx]):
+		# 	continue
+		print('date:{} temp:{}'.format(dt1,k[coly]))
+		ansx.append(dt1)
+		# ansx.append(k[colx])
+		ansy.append(float(k[coly]))
 		date1 = k[0].strip()
-	if '' != sn_mrp:
-		lbl = sn_mrp
-	if '' != sn_mv2:
-		lbl += '-' + sn_mv2
-	if '' != date1:
-		lbl += '-' + date1
 	return ansx, ansy, lbl
 
 
@@ -178,6 +174,8 @@ def main():
 		fn1.append(fn)
 		i += 1
 
+	# fn1.append('d:/tmp3/local7.log')
+
 	if 0 == len(fn1):
 		usage()
 		print('file not found')
@@ -188,32 +186,26 @@ def main():
 	# fig = plt.figure(figsize=(16,9))
 	fig = plt.figure()
 	ax1 = fig.add_subplot(1, 1, 1)
-	if COLOR_MODE:
-		pass
-	else:
-		ax1.set_prop_cycle(monochrome)
-	ax1.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
-	if SN_MODE:
-		ax1.set_ylim(10, 40)
-	else:
-		ax1.set_ylim(-40, 30)
+	fig.autofmt_xdate()
+	# if COLOR_MODE:
+	# 	pass
+	# else:
+	# 	ax1.set_prop_cycle(monochrome)
+	# 	pass
+	# ax1.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
+	# ax1.set_ylim(10, 30)
 
 	for filename in fn1:
-		if 0 < filename.find('MV2'):
-			TITLE = 'MV2特性'
-			col_x = 3 # NMR FREQ
-			col_y = 7 # SIGNAL
-		x1, y1, lbl1 = extract_file(filename, col_x, col_y, SN_MODE)
-		ax1.set_xlabel('周波数(Hz)')
-		if SN_MODE:
-			ax1.set_ylabel('S/N(dB)')
-		else:
-			ax1.set_ylabel('signal(dB)')
-		# plt.plot(x1, y1, label=lbl1)
+		TITLE = '室温'
+		col_x = 1 # NMR FREQ
+		col_y = 2 # SIGNAL
+		x1, y1, lbl1 = extract_one_file(filename, col_x, col_y, SN_MODE)
+		ax1.set_xlabel('date')
+		ax1.set_ylabel('温度(℃)')
 		ax1.plot(x1, y1, label=lbl1)
 
 	# ax1.xaxis.offsetText.set_fontsize(14)
-	ax1.xaxis.set_major_formatter(ptick.ScalarFormatter(useMathText=True))
+	# ax1.xaxis.set_major_formatter(ptick.ScalarFormatter(useMathText=True))
 	plt.title(TITLE)
 	ax1.legend()
 	plt.show()
