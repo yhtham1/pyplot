@@ -67,7 +67,7 @@ def is_float(s):
 
 
 def extract_file(filename, colx, coly, sn_mode = False):
-	# print('extract_file({} x={} y={})'.format(filename, colx, coly))
+	print('extract_file({} x={} y={})'.format(filename, colx, coly))
 	sn_mrp = ''
 	sn_mv2 = ''
 	date1 = ''
@@ -92,7 +92,7 @@ def extract_file(filename, colx, coly, sn_mode = False):
 			sn_mrp = 'MRP:' + get_serialnumber(get_tail(l1, '*IDN?:'))
 		k = re.split(r'[\t,]', l2)
 		if 0 <= l1.find('#'):
-			# print(l2)
+			print(l2)
 			continue
 		if len(k) < colx:
 			continue
@@ -184,7 +184,7 @@ def main():
 		return
 
 	path_p = Path(sys.argv[0])
-	# print('START {} {}'.format(path_p, get_filedatetime(path_p)))
+	print('START {} {}'.format(path_p, get_filedatetime(path_p)))
 	# fig = plt.figure(figsize=(16,9))
 	fig = plt.figure()
 	ax1 = fig.add_subplot(1, 1, 1)
@@ -194,9 +194,9 @@ def main():
 		ax1.set_prop_cycle(monochrome)
 	ax1.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
 	if SN_MODE:
-		ax1.set_ylim(10, 40)
+		ax1.set_ylim(0, 40)
 	else:
-		ax1.set_ylim(-40, 30)
+		ax1.set_ylim(-40, 20)
 
 	for filename in fn1:
 		if 0 < filename.find('MV2'):
@@ -216,6 +216,7 @@ def main():
 	ax1.xaxis.set_major_formatter(ptick.ScalarFormatter(useMathText=True))
 	plt.title(TITLE)
 	ax1.legend()
+	plt.grid()
 	plt.show()
 	# print_cycle()
 	pass

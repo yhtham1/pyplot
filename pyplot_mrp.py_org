@@ -66,8 +66,8 @@ def is_float(s):
 	return True
 
 
-def extract_file(filename, colx, coly, sn_mode = False):
-	# print('extract_file({} x={} y={})'.format(filename, colx, coly))
+def extract_file(filename, colx, coly):
+	print('extract_file({} x={} y={})'.format(filename, colx, coly))
 	sn_mrp = ''
 	sn_mv2 = ''
 	date1 = ''
@@ -92,7 +92,7 @@ def extract_file(filename, colx, coly, sn_mode = False):
 			sn_mrp = 'MRP:' + get_serialnumber(get_tail(l1, '*IDN?:'))
 		k = re.split(r'[\t,]', l2)
 		if 0 <= l1.find('#'):
-			# print(l2)
+			print(l2)
 			continue
 		if len(k) < colx:
 			continue
@@ -102,10 +102,7 @@ def extract_file(filename, colx, coly, sn_mode = False):
 			continue
 		# print(k[colx],k[coly])
 		ansx.append(float(k[colx]))
-		if sn_mode:
-			ansy.append( float(k[coly])-float(k[coly+1]))
-		else:
-			ansy.append(float(k[coly]))
+		ansy.append(float(k[coly]))
 		date1 = k[0].strip()
 	if '' != sn_mrp:
 		lbl = sn_mrp
@@ -147,7 +144,6 @@ def usage():
 
 def main():
 	COLOR_MODE = False
-	SN_MODE = False
 	TITLE = 'SIGNAL'
 	fn1 = []
 	col_x = 1
@@ -161,7 +157,6 @@ def main():
 			i += 1
 			continue
 		if 0 == fn.find('SN'):
-			SN_MODE = True
 			i += 1
 			continue
 		if 0 == fn.find('SIGNAL'):
@@ -184,7 +179,7 @@ def main():
 		return
 
 	path_p = Path(sys.argv[0])
-	# print('START {} {}'.format(path_p, get_filedatetime(path_p)))
+	print('START {} {}'.format(path_p, get_filedatetime(path_p)))
 	# fig = plt.figure(figsize=(16,9))
 	fig = plt.figure()
 	ax1 = fig.add_subplot(1, 1, 1)
@@ -193,22 +188,16 @@ def main():
 	else:
 		ax1.set_prop_cycle(monochrome)
 	ax1.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
-	if SN_MODE:
-		ax1.set_ylim(10, 40)
-	else:
-		ax1.set_ylim(-40, 30)
+	ax1.set_ylim(-40, 20)
 
 	for filename in fn1:
 		if 0 < filename.find('MV2'):
 			TITLE = 'MV2特性'
-			col_x = 3 # NMR FREQ
-			col_y = 7 # SIGNAL
-		x1, y1, lbl1 = extract_file(filename, col_x, col_y, SN_MODE)
+			col_x = 3
+			col_y = 7
+		x1, y1, lbl1 = extract_file(filename, col_x, col_y)
 		ax1.set_xlabel('周波数(Hz)')
-		if SN_MODE:
-			ax1.set_ylabel('S/N(dB)')
-		else:
-			ax1.set_ylabel('signal(dB)')
+		ax1.set_ylabel('signal(dB)')
 		# plt.plot(x1, y1, label=lbl1)
 		ax1.plot(x1, y1, label=lbl1)
 
