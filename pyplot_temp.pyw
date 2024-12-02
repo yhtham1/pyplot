@@ -7,6 +7,8 @@ import re
 import datetime
 from pathlib import Path
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
 import japanize_matplotlib
 import matplotlib.ticker as ptick
 from cycler import cycler
@@ -104,7 +106,7 @@ def extract_one_file(filename, colx, coly, sn_mode = False):
 		# is_datetime(k[colx])
 		# if False == is_date(k[colx]):
 		# 	continue
-		print('date:{} temp:{}'.format(dt1,k[coly]))
+		# print('date:{} temp:{}'.format(dt1,k[coly]))
 		ansx.append(dt1)
 		# ansx.append(k[colx])
 		ansy.append(float(k[coly]))
@@ -174,7 +176,7 @@ def main():
 		fn1.append(fn)
 		i += 1
 
-	# fn1.append('d:/tmp3/local7.log')
+	# fn1.append('d:/tmp3/local72.log')
 
 	if 0 == len(fn1):
 		usage()
@@ -186,6 +188,7 @@ def main():
 	# fig = plt.figure(figsize=(16,9))
 	fig = plt.figure()
 	ax1 = fig.add_subplot(1, 1, 1)
+	# fig.xaxis.set_major_formatter(mdates.MonthLocator(interval=1))
 	fig.autofmt_xdate()
 	# if COLOR_MODE:
 	# 	pass
