@@ -176,7 +176,7 @@ def main():
 		fn1.append(fn)
 		i += 1
 
-	fn1.append('d:/tmp3/local7.log')
+	# fn1.append('d:/tmp3/local7.log')
 
 	if 0 == len(fn1):
 		usage()
