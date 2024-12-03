@@ -176,7 +176,7 @@ def main():
 		fn1.append(fn)
 		i += 1
 
-	# fn1.append('d:/tmp3/local72.log')
+	fn1.append('d:/tmp3/local7.log')
 
 	if 0 == len(fn1):
 		usage()
@@ -184,36 +184,27 @@ def main():
 		return
 
 	path_p = Path(sys.argv[0])
-	# print('START {} {}'.format(path_p, get_filedatetime(path_p)))
-	# fig = plt.figure(figsize=(16,9))
-	fig = plt.figure()
-	ax1 = fig.add_subplot(1, 1, 1)
-	# fig.xaxis.set_major_formatter(mdates.MonthLocator(interval=1))
+	fig,ax = plt.subplots()
+	ax.grid()
 	fig.autofmt_xdate()
-	# if COLOR_MODE:
-	# 	pass
-	# else:
-	# 	ax1.set_prop_cycle(monochrome)
-	# 	pass
-	# ax1.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
-	# ax1.set_ylim(10, 30)
+	ax.set_xlabel('date')
+	ax.set_ylabel('温度(℃)')
 
 	for filename in fn1:
 		TITLE = '室温'
 		col_x = 1 # NMR FREQ
 		col_y = 2 # SIGNAL
 		x1, y1, lbl1 = extract_one_file(filename, col_x, col_y, SN_MODE)
-		ax1.set_xlabel('date')
-		ax1.set_ylabel('温度(℃)')
-		ax1.plot(x1, y1, label=lbl1)
+		ax.plot(x1, y1, label=lbl1)
 
 	# ax1.xaxis.offsetText.set_fontsize(14)
 	# ax1.xaxis.set_major_formatter(ptick.ScalarFormatter(useMathText=True))
 	plt.title(TITLE)
-	ax1.legend()
+	# ax1.legend()
 	plt.show()
 	# print_cycle()
 	pass
+
 
 
 if __name__ == '__main__':
